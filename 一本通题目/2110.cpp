@@ -26,24 +26,31 @@ bool isPrime(int num){
 }
 
 void dfs(int dep){
-    ans[0] = 0;
+    
     // 6. 终止条件
     if(dep == n+1){
-        for(int i = 1;i<=dep;i++){
-            printf("%d ",ans[i]);
+        if(isPrime(ans[n]+ans[1])){
+            for(int i = 1;i<dep;i++){
+                printf("%d",ans[i]);
+                if(i<n) printf(" ");
+            }
+            printf("\n");
+            exit(0); // 直接强制结束程序
         }
         return ;
     }
     
+    // 重复性剪枝
     // 1. 枚举方案数：
-    for(int i = 1;i<=n;i++){
+    for(int i = 2;i<=n;i++){
         // 2. 标记 - 防止重复搜索
         if(!vis[i]){
-            vis[i] = 1;
-            // 3. 搜索当前层
-            ans[dep] = i;
-            int tmp = ans[dep] + ans[dep-1];
+            int tmp = ans[dep-1] + i;
             if(isPrime(tmp)){ // 如果是两个数的和为素数时，再下一行
+                // 3. 搜索当前层
+                vis[i] = 1;
+                ans[dep] = i;
+                int tmp = ans[dep] + ans[dep-1];
                 // 4. 进入下一层搜索下一个方案
                 dfs(dep+1);
             }
@@ -54,7 +61,14 @@ void dfs(int dep){
 }
 
 int main(){
-    cin>>n;
-    dfs(1);
+    scanf("%d",&n);
+     // 剪枝：如果 n 是奇数，不可能构成素数环
+     if (n % 2 == 1) {
+        return 0;
+    }
+    ans[1] = 1;
+    vis[1] = 1;
+    dfs(2);
+    // cout<<isPrime(3)<<endl;
     return 0;
 }
